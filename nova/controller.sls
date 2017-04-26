@@ -98,6 +98,14 @@ nova_placement_package:
     - pkg: nova_controller_packages
     - pkg: nova_placement_package
 
+/etc/apache2/sites-enabled/nova-placement-api.conf:
+  file.managed:
+  - source: salt://nova/files/{{ controller.version }}/nova-placement-api.conf
+  - template: jinja
+  - require:
+    - pkg: nova_controller_packages
+    - pkg: nova_placement_package
+
 nova_cell_create:
   cmd.run:
   - name: 'su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova'
@@ -114,7 +122,7 @@ nova_apache_restart:
   - watch:
     - file: /etc/nova/nova.conf
     - file: /etc/nova/api-paste.ini
-    - file: /etc/apache2/sites-available/nova-placement-api.conf
+    - file: /etc/apache2/sites-enabled/nova-placement-api.conf
 
 {%- endif %}
 
